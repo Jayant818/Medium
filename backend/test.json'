@@ -1,0 +1,104 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+
+// Uncomment this line to use console.log
+// import "hardhat/console.sol";
+
+contract Voting {
+
+   uint nextVoteId;
+
+   struct Vote{
+     address owner;
+     uint endTime;
+     uint options;
+     string uri;
+     uint[] votes;
+     mapping(address=>bool) voted;
+   }
+
+   // Map to store all votes jo ki ab tak hue hai 
+   mapping(uint=>Vote) votes;
+
+
+   // ab hume event emit karne taki hum frontend side pe unko tha sake 
+   // phla event hoga jab naya Vote create hoga 
+   event VoteCreated(
+    address indexed owner,
+    uint indexed createdAt,
+    uint indexed voteId,
+    uint endTime
+   );
+ 
+   // teesra member hoga jab kisi nai vote kiya ho
+
+   event Voted(
+    address indexed voter,
+    uint indexed voteId,
+    uint option,
+    uint createdAt
+   );
+
+
+   modifier canVote(uint voteId,uint option){
+    require(voteId<nextVoteId,"Bhai konsa vote");
+    require(option < votes[voteId].options,"abe ye option mai hi na hai");
+    require(!votes[voteId].voted[msg.sender]);
+    require(block.timestamp < votes[voteId].endTime);
+    _;
+   }
+
+   function createVote(string memory uri ,uint options , uint endTime) external {
+        // check karo option ki range kya hai 
+        require(options>=2 &&  options<=8,"itna nhi chalega");
+        require(block.timestamp<endTime);
+
+        uint voteId = nextVoteId;
+        votes[voteId].owner = msg.sender;
+        votes[voteId].endTime = endTime;
+        votes[voteId].options = options;
+        votes[voteId].uri = uri;
+        votes[voteId].votes = new uint[](options);
+        // votes[voteId].voted[msg.sender] = true;
+        emit VoteCreated(msg.sender, block.timestamp, voteId, endTime);
+        nextVoteId++;
+
+   }
+
+  
+
+   function vote(uint voteId, uint option) external canVote(voteId,option){
+    votes[voteId].votes[option]++;
+    votes[voteId].voted[msg.sender] = true;
+    emit Voted(msg.sender, voteId, option, block.timestamp);
+
+   }
+
+    // solidity allow nhi karta puri mapping return karna to hume voteId k basis pe access karni padegi
+    //  address owner;
+    //  uint endTime;
+    //  uint options;
+    //  string uri;
+    //  uint[] votes;
+    // Example But isko return nhi kar sakte alag se karna padega
+    //  mapping(address=>bool) voted;
+
+    function getVote(uint voteId) public view returns (address,uint ,uint ,string memory,uint[] memory ){
+        return (
+            votes[voteId].owner,
+            votes[voteId].endTime,
+            votes[voteId].options,
+            votes[voteId].uri,
+            votes[voteId].votes
+        );
+    } 
+
+    function didVote(uint voteId,address member) public view returns (bool){
+        return (
+            votes[voteId].voted[member]
+        );
+    }
+
+
+
+}
