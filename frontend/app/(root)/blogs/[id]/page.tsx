@@ -38,8 +38,10 @@ const Page = ({}) => {
 		<div className="w-full flex justify-center mt-10">
 			<div className="grid grid-cols-12 w-[80%]">
 				<div className="col-span-8  space-y-4">
+					{/* @ts-ignore */}
 					<h1 className="text-3xl font-bold">{fullBlog.blog.title}</h1>
 					<p className="text-gray-400 ">Posted on March 30,2023</p>
+					{/* @ts-ignore */}
 					<p className=" ">{fullBlog.blog.content}</p>
 				</div>
 				<div className="col-span-4 ">
@@ -47,12 +49,14 @@ const Page = ({}) => {
 					<div className="flex items-center gap-2">
 						<div>
 							<Avatar
+								// @ts-ignore
 								Name={fullBlog.blog.author?.name || "Anonymous"}
 								size="Big"
 							/>
 						</div>
 						<div>
 							<h1 className="text-lg font-semibold">
+								{/* @ts-ignore */}
 								{fullBlog.blog.author?.name || "Anonymous"}
 							</h1>
 							<p>A Very good catch user description</p>
