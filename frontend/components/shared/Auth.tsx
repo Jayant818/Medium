@@ -6,6 +6,7 @@ import InputField from "./InputField";
 // import { BACKEND_URL } from "@/constants";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { BACKEND_URL } from "@/constants";
 
 const Auth = ({ type }: { type: "signup" | "signIn" }) => {
 	const router = useRouter();
@@ -18,10 +19,11 @@ const Auth = ({ type }: { type: "signup" | "signIn" }) => {
 	const sendRequest = async () => {
 		console.log(data);
 		try {
-			const url = `${process.env.BACKEND_URL}/api/v1/${
+			const url = `${BACKEND_URL}/api/v1/${
 				type === "signup" ? "signup" : "signin"
 			}`;
 			console.log(url);
+			console.log(data);
 			const res = await axios.post(url, data);
 			const ans = res.data;
 			console.log("Token", ans);
